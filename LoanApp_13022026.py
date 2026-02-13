@@ -4,14 +4,23 @@ import numpy as np
 import io
 import matplotlib.pyplot as plt
 
+st.set_page_config(
+    page_title="NR Bank Finder",
+    page_icon="logo.png",
+    layout="wide"
+)
+
 # ---------------- LOGIN ----------------
-APP_PASSWORD = "1974"   # <-- Change this to your password
+APP_PASSWORD = "7476"   # <-- Change this to your password
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
 
+# ----- LOGIN PAGE -----
 if not st.session_state.logged_in:
+    st.image("logo.png", width=180)
     st.title("🔐 Login Required")
+
     password = st.text_input("Enter Password", type="password")
 
     if st.button("Login"):
@@ -23,6 +32,9 @@ if not st.session_state.logged_in:
             st.error("Wrong password ❌")
 
     st.stop()
+
+# ----- MAIN APP (After Login) -----
+st.image("logo.png", width=180)
 
 # ---------------- CONFIG ----------------
 EXCEL_PATH = "Bank_Calc.xlsx"
@@ -262,3 +274,4 @@ if st.button("🚀 ShowMeTheBanks"):
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 
     )
+
