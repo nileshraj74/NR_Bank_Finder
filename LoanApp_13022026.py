@@ -39,8 +39,8 @@ st.image("logo.png", width=180)
 # ---------------- CONFIG ----------------
 EXCEL_PATH = "Bank_Calc.xlsx"
 
-st.set_page_config(page_title="Loan Bank Eligibility Engine", layout="wide")
-st.title("🏦 Loan Bank Eligibility Analyzer (Auto Recommendation Engine)")
+st.set_page_config(page_title="Loan Proposal Eligibility Engine", layout="wide")
+st.title("🏦 Bank Eligibility Analyzer (Auto Recommendation Engine)")
 
 # ---------------- LOAD BANK RULES ----------------
 @st.cache_data
@@ -274,5 +274,6 @@ if st.button("🚀 ShowMeTheBanks"):
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 
     )
+
 
 
