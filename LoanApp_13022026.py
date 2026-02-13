@@ -11,7 +11,7 @@ st.set_page_config(
 )
 
 # ---------------- LOGIN ----------------
-APP_PASSWORD = "7476"   # <-- Change this to your password
+APP_PASSWORD = "Banthia@123"   # <-- Change this to your password
 
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -274,4 +274,5 @@ if st.button("🚀 ShowMeTheBanks"):
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 
     )
+
 
