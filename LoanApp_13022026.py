@@ -62,7 +62,7 @@ rules_df = load_bank_rules()
 banks = rules_df.columns.tolist()
 
 # ---------------- USER INPUTS ----------------
-st.header("📥 Enter Proposal Details")
+st.header("📥 Enter Proposal Details (Values in Lac)")
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
@@ -274,6 +274,7 @@ if st.button("🚀 ShowMeTheBanks"):
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 
     )
+
 
 
 
