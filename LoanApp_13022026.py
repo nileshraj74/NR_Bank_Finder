@@ -49,29 +49,47 @@ st.title("🏦 Bank Eligibility Analyzer (Auto Recommendation Engine)")
 @st.cache_data
 def load_bank_rules():
     import os
-    
+
     BASE_DIR = os.path.dirname(__file__)
     file_path = os.path.join(BASE_DIR, "Bank_Calc.xlsx")
 
     if not os.path.exists(file_path):
-        raise FileNotFoundError(f"Excel file not found at {file_path}")
+        raise FileNotFoundError(f"File not found: {file_path}")
 
-    df = pd.read_excel(file_path)
+    # 🔥 FORCE correct sheet
+    df = pd.read_excel(file_path, sheet_name=0)
 
-    if df is None or df.empty:
-        raise ValueError("Excel file loaded but empty")
+    # 🔥 Remove completely empty rows/columns
+    df = df.dropna(how="all")
+    df = df.dropna(axis=1, how="all")
 
+    if df.empty:
+        raise ValueError("Excel file is empty after cleaning")
+
+    # 🔥 Clean headers
     df.columns = df.columns.astype(str).str.strip()
+
+    # 🔥 Ensure first column is valid
+    if df.columns[0] == "" or df.columns[0] is None:
+        raise ValueError("First column header is missing in Excel")
+
     criteria_col = df.columns[0]
+
+    df[criteria_col] = df[criteria_col].astype(str).str.strip()
     df.set_index(criteria_col, inplace=True)
-    df.index = df.index.astype(str).str.strip()
 
+    # 🔥 Normalize safely
     def normalize(val):
-        if isinstance(val, str) and "%" in val:
-            return float(val.replace("%", "").strip()) / 100
-        return val
+        try:
+            if isinstance(val, str) and "%" in val:
+                return float(val.replace("%", "").strip()) / 100
+            return val
+        except:
+            return val
 
-    return df.applymap(normalize)
+    df = df.applymap(normalize)
+
+    return df
 
 rules_df = load_bank_rules()
 banks = rules_df.columns.tolist()
