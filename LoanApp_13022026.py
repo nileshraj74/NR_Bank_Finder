@@ -21,7 +21,7 @@ if not st.session_state.logged_in:
     st.image("logo.png", width=180)
     st.title("🔐 Login Required")
 
-    password = st.text_input("Enter Password", type="password")
+    password = st.text_input("Enter Pessword", type="password")
 
     if st.button("Login"):
         if password == APP_PASSWORD:
@@ -49,36 +49,55 @@ st.title("🏦 Bank Eligibility Analyzer (Auto Recommendation Engine)")
 @st.cache_data
 def load_bank_rules():
     import os
+    import pandas as pd
 
     BASE_DIR = os.path.dirname(__file__)
     file_path = os.path.join(BASE_DIR, "Bank_Calc.xlsx")
 
+    # ---- STEP 1: Check file exists ----
     if not os.path.exists(file_path):
-        raise FileNotFoundError(f"File not found: {file_path}")
+        st.error(f"❌ File NOT found: {file_path}")
+        st.stop()
 
-    # 🔥 FORCE correct sheet
-    df = pd.read_excel(file_path, sheet_name=0)
+    # ---- STEP 2: Read Excel safely ----
+    try:
+        df = pd.read_excel(file_path, sheet_name=0, engine="openpyxl")
+    except Exception as e:
+        st.error(f"❌ Excel read error: {e}")
+        st.stop()
 
-    # 🔥 Remove completely empty rows/columns
+    # ---- STEP 3: Debug print ----
+    st.write("✅ Raw Data Preview")
+    st.write(df.head())
+
+    # ---- STEP 4: Clean data ----
     df = df.dropna(how="all")
     df = df.dropna(axis=1, how="all")
 
     if df.empty:
-        raise ValueError("Excel file is empty after cleaning")
+        st.error("❌ Excel became empty after cleaning")
+        st.stop()
 
-    # 🔥 Clean headers
+    # ---- STEP 5: Clean column names ----
     df.columns = df.columns.astype(str).str.strip()
 
-    # 🔥 Ensure first column is valid
-    if df.columns[0] == "" or df.columns[0] is None:
-        raise ValueError("First column header is missing in Excel")
+    # ---- STEP 6: Validate first column ----
+    first_col = df.columns[0]
 
-    criteria_col = df.columns[0]
+    if first_col is None or first_col == "":
+        st.error("❌ First column header missing in Excel")
+        st.stop()
 
-    df[criteria_col] = df[criteria_col].astype(str).str.strip()
-    df.set_index(criteria_col, inplace=True)
+    df[first_col] = df[first_col].astype(str).str.strip()
 
-    # 🔥 Normalize safely
+    # ---- STEP 7: Set index safely ----
+    try:
+        df = df.set_index(first_col)
+    except Exception as e:
+        st.error(f"❌ Index error: {e}")
+        st.stop()
+
+    # ---- STEP 8: Normalize safely (NO applymap crash) ----
     def normalize(val):
         try:
             if isinstance(val, str) and "%" in val:
@@ -87,7 +106,16 @@ def load_bank_rules():
         except:
             return val
 
-    df = df.applymap(normalize)
+    # 🔥 CRITICAL FIX (replace applymap)
+    df = df.apply(lambda col: col.map(normalize))
+
+    # ---- STEP 9: Final check ----
+    if not isinstance(df, pd.DataFrame):
+        st.error("❌ Data is not a DataFrame after processing")
+        st.stop()
+
+    st.write("✅ Cleaned Data")
+    st.write(df.head())
 
     return df
 
