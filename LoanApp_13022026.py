@@ -37,7 +37,10 @@ if not st.session_state.logged_in:
 st.image("logo.png", width=180)
 
 # ---------------- CONFIG ----------------
-EXCEL_PATH = "Bank_Calc.xlsx"
+import os
+
+BASE_DIR = os.path.dirname(__file__)
+EXCEL_PATH = os.path.join(BASE_DIR, "Bank_Calc.xlsx")
 
 st.set_page_config(page_title="Loan Proposal Eligibility Engine", layout="wide")
 st.title("🏦 Bank Eligibility Analyzer (Auto Recommendation Engine)")
@@ -45,7 +48,19 @@ st.title("🏦 Bank Eligibility Analyzer (Auto Recommendation Engine)")
 # ---------------- LOAD BANK RULES ----------------
 @st.cache_data
 def load_bank_rules():
-    df = pd.read_excel(EXCEL_PATH)
+    import os
+    
+    BASE_DIR = os.path.dirname(__file__)
+    file_path = os.path.join(BASE_DIR, "Bank_Calc.xlsx")
+
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"Excel file not found at {file_path}")
+
+    df = pd.read_excel(file_path)
+
+    if df is None or df.empty:
+        raise ValueError("Excel file loaded but empty")
+
     df.columns = df.columns.astype(str).str.strip()
     criteria_col = df.columns[0]
     df.set_index(criteria_col, inplace=True)
