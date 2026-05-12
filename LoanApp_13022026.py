@@ -67,8 +67,8 @@ def load_bank_rules():
         st.stop()
 
     # ---- STEP 3: Debug print ----
-    st.write("✅ Raw Data Preview")
-    st.write(df.head())
+    #st.write("✅ Raw Data Preview")
+    #st.write(df.head())
 
     # ---- STEP 4: Clean data ----
     df = df.dropna(how="all")
@@ -114,8 +114,8 @@ def load_bank_rules():
         st.error("❌ Data is not a DataFrame after processing")
         st.stop()
 
-    st.write("✅ Cleaned Data")
-    st.write(df.head())
+    #st.write("✅ Cleaned Data")
+    #st.write(df.head())
 
     return df
 
